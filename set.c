@@ -1,9 +1,14 @@
 #include <set.h>
 /*
-typedef struct Set {
-	void ** elements;
+typedef struct SetElement {
+	void * info;
 	size_t infoSize;
-	int setSize;
+}SetElement;
+
+typedef struct Set {
+	Element ** elements;
+	size_t infoSize;
+	int size;
 }Set;
 */
 int newSet(Set ** set, size_t infoSize)
@@ -11,21 +16,19 @@ int newSet(Set ** set, size_t infoSize)
 	if ( set == NULL ) {
 		return ERR;
 	}
-
-	(*set) = (Set*)malloc(sizeof(Set));
-	(*set)->elements=(Element**)malloc(sizeof(Element*));
-	(*set)->elements[0]=NULL;
-	(*set)->infoSize=infoSize;
-	(*set)->setSize=0;
 }
-
-int newSetElement(Set ** set, size_t infoSize)
-{
-	
-}
+void freeSet(Set ** set);
 int isIn(Set * set, const void * info);
-int sizeSet(const Set * set);
-int sizeInfo(const Set * set);
+int getSetSize(const Set * set);
+int getSetInfoSize(const Set * set);
 int addSet(Set * set, const void * info);
 int removeSet(Set * set, const void * info);
-int getElementsSet(void ** elements,Set * set);
+int getElementsSet(void ** elements, const Set * set);
+int compareSets(const Set * set1, const Set * set2);
+
+/* Operations with sets */
+int setUnion(Set ** detination, const Set * op1, const Set * op2);
+int setIntersection(Set ** detination, const Set * op1, const Set * op2);
+
+/** Auxiliar functions **/
+int newSetElement(SetElement ** setElement, void * info, size_t infoSize);

@@ -12,14 +12,22 @@ typedef struct Set {
 	int size; /* useful */
 }Set;
 
-int newSet(Set ** set, size_t infoSize);
-int newSetElement(SetElement ** setElement, void * info);
-int isIn(Set * set, const void * info);
-int sizeSet(const Set * set);
-int sizeInfo(const Set * set);
-int addSet(Set * set, const void * info);
-int removeSet(Set * set, const void * info);
-int getElementsSet(void ** elements,Set * set);
+STATUS newSet(Set ** set, size_t infoSize);
+void freeSet(Set ** set);
+STATUS isIn(Set * set, const void * info);
+size_t getSetSize(const Set * set);
+size_t getSetInfoSize(const Set * set);
+STATUS addSet(Set * set, const void * info);
+STATUS removeSet(Set * set, const void * info);
+STATUS getElementsSet(void ** elements, const Set * set);
+int compareSets(const Set * set1, const Set * set2);
 
-/* TODO add a function to compare two elements in the class? */
+/* Operations with sets */
+STATUS setUnion(Set ** detination, const Set * op1, const Set * op2);
+STATUS setIntersection(Set ** detination, const Set * op1, const Set * op2);
+
+/** Auxiliar functions **/
+STATUS newSetElement(SetElement ** setElement, void * info, size_t infoSize);
+void freeSetElement(SetElement ** setElement);
+
 #endif
