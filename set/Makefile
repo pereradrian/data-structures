@@ -12,6 +12,7 @@ clean:
 	@echo -n Cleaning ...
 	@rm ./*~ > /dev/null 2>&1 || true
 	@rm ./*.o > /dev/null 2>&1 || true
+	@rm ./testSet > /dev/null 2>&1 || true
 	@echo "\t[OK]"
 
 testSet: testSet.o set.o

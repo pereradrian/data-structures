@@ -123,7 +123,7 @@ STATUS addSet(Set * set, const void * info, size_t infoSize, void (*f_print)(FIL
 	}
 
 	/* Create the new element */
-	newSetElement(&(set->elements[size+1]),info,infoSize,f_print);
+	newSetElement(&(set->elements[size]),info,infoSize,f_print);
 	/* Update the set size */
 	set->size=size+1;
 	
