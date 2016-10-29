@@ -20,23 +20,24 @@ typedef struct Set {
 
 STATUS newSet(Set ** set);
 void freeSet(Set ** set);
-BOOLEAN isIn(const Set * set, const void * info, size_t infoSize);
-size_t getSetSize(const Set * set);
+BOOLEAN isInSet(const Set * set, const void * info, size_t infoSize);
+size_t getSizeSet(const Set * set);
 STATUS addSet(Set * set, const void * info, size_t infoSize, void (*f_print)(FILE *, const void *));
 STATUS removeSet(Set * set, const void * info, size_t infoSize);
-STATUS getElementsSet(void ** infos, size_t ** infoSizes, const Set * set);
+STATUS getSetElements(void ** infos, size_t ** infoSizes, const Set * set);
+STATUS copySet(Set ** dst,const Set * src);
 void printSet(FILE *fp, const Set * set);
 
 /* Operations with sets */
-BOOLEAN setsEqual(const Set * op1, const Set * op2);
-STATUS setUnion(Set ** detination, const Set * op1, const Set * op2);
-STATUS setIntersection(Set ** detination, const Set * op1, const Set * op2);
+BOOLEAN equalsSet(const Set * op1, const Set * op2);
+STATUS unionSet(Set ** detination, const Set * op1, const Set * op2);
+STATUS interSectionSet(Set ** detination, const Set * op1, const Set * op2);
 
 /** Auxiliary functions **/
 STATUS newSetElement(SetElement ** setElement,const  void * info, size_t infoSize, void (*f_print)(FILE *, const void *));
 void freeSetElement(SetElement ** setElement);
-int compareInfoElement(const SetElement * setElement, const void * info, size_t infoSize);
-BOOLEAN elementsEqual(const SetElement * setElement1, const SetElement * setElement2);
+int compareInfoSetElement(const SetElement * setElement, const void * info, size_t infoSize);
+BOOLEAN equalsSetElement(const SetElement * setElement1, const SetElement * setElement2);
 void printSetElement(FILE *fp, const SetElement * setElement);
 
 #endif

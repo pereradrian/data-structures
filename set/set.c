@@ -64,7 +64,7 @@ void freeSet(Set ** set)
 	
 	return;
 }
-BOOLEAN isIn(const Set * set, const void * info, size_t infoSize)
+BOOLEAN isInSet(const Set * set, const void * info, size_t infoSize)
 {
 	int i=0;
 	int size =0;
@@ -81,7 +81,7 @@ BOOLEAN isIn(const Set * set, const void * info, size_t infoSize)
 
 	/* Iterate over the array checking if the info is in any element */
 	for (i=0 ; i<size ; i++) {
-		if (compareInfoElement(elements[i],info,infoSize) == TRUE) {
+		if (compareInfoSetElement(elements[i],info,infoSize) == TRUE) {
 			return TRUE;
 		}
 	}
@@ -89,10 +89,11 @@ BOOLEAN isIn(const Set * set, const void * info, size_t infoSize)
 	return FALSE;
 }
 
-size_t getSetSize(const Set * set)
+size_t getSizeSet(const Set * set)
 {
 	return set->size;
 }
+
 STATUS addSet(Set * set, const void * info, size_t infoSize, void (*f_print)(FILE *, const void *))
 {
 	int i=0;
@@ -110,7 +111,7 @@ STATUS addSet(Set * set, const void * info, size_t infoSize, void (*f_print)(FIL
 
 	/* Iterate over the array checking if the info is in any element */
 	for (i=0 ; i<size ; i++) {
-		if (compareInfoElement(elements[i],info,infoSize) == TRUE) {
+		if (compareInfoSetElement(elements[i],info,infoSize) == TRUE) {
 			return OTHER;
 		}
 	}
@@ -147,9 +148,17 @@ STATUS removeSet(Set * set, const void * info, size_t infoSize)
 	size=set->size;
 
 	/* Iterate over the array checking if the info is in any element */
-	for (i=0 ; i<size ; i++) {
-		if (compareInfoElement(elements[i],info,infoSize) == TRUE) {
+	for ( ; i<size ; i++) {
+		if (compareInfoSetElement(elements[i],info,infoSize) == 0) {
+			/* free the removed element */
 			freeSetElement(&(elements[i]));
+			/* Keep the memory aligned*/
+			/* Shift each element one position to the left */
+			for (;i<size-1;i++) {
+				elements[i]=elements[i+1];
+			}
+			/* Update the structure */
+			set->size=size-1;
 			return OK;
 		}
 	}
@@ -195,6 +204,42 @@ STATUS getElementsSet(void ** infos, size_t ** infoSizes, const Set * set)
 	return OK;
 }
 
+STATUS copySet(Set ** dst,const Set * src)
+{
+	int i=0;
+	int size =0;
+	SetElement ** elements =NULL;
+
+	if ( dst == NULL || src == NULL ) {
+		return ERR;
+	}
+
+	/* Create, and allocate the destination array */
+	newSet(dst);
+
+	/* Code otimization */
+	/* Needs a little bit of extra memory, but is faster */
+	elements=src->elements;
+	size=src->size;
+
+	/* Iterate over the first array adding each element*/
+	for ( ; i<size ; i++) {
+		/* Resize the vector */
+		(*dst)->elements=(SetElement **)realloc((*dst)->elements,(size+1)*sizeof(SetElement*));
+		if ( (*dst)->elements == NULL ) {
+			return ERR;
+		}
+
+		/* Create the new element */
+		newSetElement(&((*dst)->elements[i]),elements[i]->info,elements[i]->infoSize,elements[i]->f_print);
+	}
+
+	/* Update the set size */
+	(*dst)->size=size;
+
+	return OK;
+}
+
 void printSet(FILE *fp, const Set * set)
 {
 
@@ -220,7 +265,7 @@ void printSet(FILE *fp, const Set * set)
 	return;
 }
 
-BOOLEAN setsEqual(const Set * op1, const Set * op2)
+BOOLEAN equalsSet(const Set * op1, const Set * op2)
 {
 	int i=0;
 	int size1 =0;
@@ -243,7 +288,7 @@ BOOLEAN setsEqual(const Set * op1, const Set * op2)
 	/* Iterate over the array checking if all elements of set 1 are in the set 2*/
 	for (i=0 ; i<size1 ; i++) {
 		/* If one element */
-		if (isIn(op2,elements1[i]->info,elements1[i]->infoSize) == FALSE) {
+		if (isInSet(op2,elements1[i]->info,elements1[i]->infoSize) == FALSE) {
 			return FALSE;
 		}
 	}
@@ -251,18 +296,19 @@ BOOLEAN setsEqual(const Set * op1, const Set * op2)
 	return TRUE;
 }
 
-STATUS setUnion(Set ** detination, const Set * op1, const Set * op2)
+/* TODO while intersection dont use add, because it checks if is already in the set */
+STATUS unionSet(Set ** destination, const Set * op1, const Set * op2)
 {
 	int i=0;
 	int size =0;
 	SetElement ** elements =NULL;
 
-	if ( detination == NULL || op1 == NULL || op2 == NULL ) {
+	if ( destination == NULL || op1 == NULL || op2 == NULL ) {
 		return ERR;
 	}
 
 	/* Create, and allocate the destination array */
-	newSet(detination);
+	newSet(destination);
 
 	/* Code otimization */
 	/* Needs a little bit of extra memory, but is faster */
@@ -271,7 +317,7 @@ STATUS setUnion(Set ** detination, const Set * op1, const Set * op2)
 
 	/* Iterate over the first array adding each element*/
 	for (i=0 ; i<size ; i++) {
-		addSet((*detination), elements[i]->info, elements[i]->infoSize, elements[i]->f_print);
+		addSet((*destination), elements[i]->info, elements[i]->infoSize, elements[i]->f_print);
 	}
 
 	elements=op2->elements;
@@ -279,13 +325,13 @@ STATUS setUnion(Set ** detination, const Set * op1, const Set * op2)
 
 	/* Iterate over the second array adding each element*/
 	for (i=0 ; i<size ; i++) {
-		addSet((*detination), elements[i]->info, elements[i]->infoSize, elements[i]->f_print);
+		addSet((*destination), elements[i]->info, elements[i]->infoSize, elements[i]->f_print);
 	}
 
 	return OK;
 }
 
-STATUS setIntersection(Set ** detination, const Set * op1, const Set * op2)
+STATUS intersectionSet(Set ** detination, const Set * op1, const Set * op2)
 {
 	int i=0,j=0;
 	int size1 =0, size2 =0;
@@ -308,7 +354,7 @@ STATUS setIntersection(Set ** detination, const Set * op1, const Set * op2)
 	/* Iterate over the first array adding each element if is in the second */
 	for (i=0 ; i<size1 ; i++) {
 		for (j=0; j<size2 ; j++) {
-			if (elementsEqual(elements1[i], elements2[j]) == TRUE) {
+			if (equalsSetElement(elements1[i], elements2[j]) == TRUE) {
 				addSet((*detination), elements1[i]->info, elements1[i]->infoSize,elements1[i]->f_print);
 			}
 		}
@@ -357,7 +403,7 @@ void freeSetElement(SetElement ** setElement)
 	return;
 }
 
-int compareInfoElement(const SetElement * setElement, const void * info, size_t infoSize)
+int compareInfoSetElement(const SetElement * setElement, const void * info, size_t infoSize)
 {
 	if ( setElement == NULL || info == NULL) {
 		return 0;
@@ -372,9 +418,9 @@ int compareInfoElement(const SetElement * setElement, const void * info, size_t 
 	return memcmp(setElement->info, info, infoSize);
 }
 
-BOOLEAN elementsEqual(const SetElement * setElement1, const SetElement * setElement2)
+BOOLEAN equalsSetElement(const SetElement * setElement1, const SetElement * setElement2)
 {
-	if ( compareInfoElement(setElement1, setElement2->info,setElement2->infoSize) == 0) {
+	if ( compareInfoSetElement(setElement1, setElement2->info,setElement2->infoSize) == 0) {
 		return TRUE;
 	}
 	return TRUE;
