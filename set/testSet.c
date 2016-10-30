@@ -16,6 +16,8 @@ int main() {
 	int value7 =7;
 	int value8 =8;
 	int value9 =9;
+	int * arrayIntegers =NULL;
+	size_t * arraySizes =NULL;
 
 	/*Empty set tests  */
 	printf("Empty set tests:\n");
@@ -100,15 +102,92 @@ int main() {
 	addSet(set2,(void *)&value8,sizeof(int),&printInt);
 	addSet(set,(void *)&value9,sizeof(int),&printInt);
 
+	printf("Set 1:\n");
 	printSet(stdout,set);
+	printf("Set 2:\n");
 	printSet(stdout,set2);
 	unionSet(&set3,set,set2);
+	printf("Result:\n");
 	printSet(stdout,set3);
 	
 	freeSet(&set);	
 	freeSet(&set2);
 	freeSet(&set3);
+
+	/* Intersection set */
+	printf("Intersection of sets:\n");
+	newSet(&set);
+	newSet(&set2);
+	addSet(set,(void *)&value1,sizeof(int),&printInt);
+	addSet(set2,(void *)&value2,sizeof(int),&printInt);
+	addSet(set,(void *)&value3,sizeof(int),&printInt);
+	addSet(set2,(void *)&value4,sizeof(int),&printInt);
+	addSet(set,(void *)&value5,sizeof(int),&printInt);
+	addSet(set2,(void *)&value6,sizeof(int),&printInt);
+	addSet(set,(void *)&value7,sizeof(int),&printInt);
+	addSet(set2,(void *)&value8,sizeof(int),&printInt);
+	addSet(set,(void *)&value9,sizeof(int),&printInt);
+
+	printf("Set 1:\n");
+	printSet(stdout,set);
+	printf("Set 2:\n");
+	printSet(stdout,set2);
+	intersectionSet(&set3,set,set2);
+	printf("Result (Empty set):\n");
+	printSet(stdout,set3);
 	
+	freeSet(&set);	
+	freeSet(&set2);
+	freeSet(&set3);
+
+	/* Intersection set */
+	printf("Intersection of sets II:\n");
+	newSet(&set);
+	newSet(&set2);
+	addSet(set,(void *)&value1,sizeof(int),&printInt);
+	addSet(set2,(void *)&value2,sizeof(int),&printInt);
+	addSet(set,(void *)&value3,sizeof(int),&printInt);
+	addSet(set2,(void *)&value4,sizeof(int),&printInt);
+	addSet(set,(void *)&value5,sizeof(int),&printInt);
+	addSet(set2,(void *)&value6,sizeof(int),&printInt);
+	addSet(set,(void *)&value7,sizeof(int),&printInt);
+	addSet(set2,(void *)&value8,sizeof(int),&printInt);
+	addSet(set,(void *)&value9,sizeof(int),&printInt);
+
+	addSet(set,(void *)&value2,sizeof(int),&printInt);
+	addSet(set,(void *)&value4,sizeof(int),&printInt);
+	addSet(set,(void *)&value6,sizeof(int),&printInt);
+	addSet(set,(void *)&value8,sizeof(int),&printInt);
+
+	printf("Set 1:\n");
+	printSet(stdout,set);
+	printf("Set 2:\n");
+	printSet(stdout,set2);
+	intersectionSet(&set3,set,set2);
+	printf("Result (Even numbers):\n");
+	printSet(stdout,set3);
+	
+	freeSet(&set);	
+	freeSet(&set2);
+	freeSet(&set3);
+
+	/* Getting the array of infos */
+	printf("Getting the array:\n");
+	newSet(&set);
+	addSet(set,(void *)&value1,sizeof(int),&printInt);
+	addSet(set,(void *)&value2,sizeof(int),&printInt);
+	addSet(set,(void *)&value3,sizeof(int),&printInt);
+	addSet(set,(void *)&value4,sizeof(int),&printInt);
+	addSet(set,(void *)&value5,sizeof(int),&printInt);
+	addSet(set,(void *)&value6,sizeof(int),&printInt);
+	addSet(set,(void *)&value7,sizeof(int),&printInt);
+	addSet(set,(void *)&value8,sizeof(int),&printInt);
+	printSet(stdout,set);
+	
+	/* Obtain the infos */
+	getSetElements((void***)&arrayIntegers, &arraySizes, set);
+
+	freeSet(&set);	
 	
 	
 
@@ -129,25 +208,23 @@ void printInt(FILE *fp,const void* integer)
 /*
 STATUS newSet(Set ** set);
 void freeSet(Set ** set);
-BOOLEAN isIn(const Set * set, const void * info, size_t infoSize);
-size_t getSetSize(const Set * set);
+BOOLEAN isInSet(const Set * set, const void * info, size_t infoSize);
+size_t getSizeSet(const Set * set);
 STATUS addSet(Set * set, const void * info, size_t infoSize, void (*f_print)(FILE *, const void *));
+STATUS insertSet(Set * set, const void * info, size_t infoSize, void (*f_print)(FILE *, const void *));
 STATUS removeSet(Set * set, const void * info, size_t infoSize);
-STATUS getElementsSet(void ** infos, size_t ** infoSizes, const Set * set);
+STATUS getSetElements(void ** infos, size_t ** infoSizes, const Set * set);
+STATUS copySet(Set ** dst,const Set * src);
 void printSet(FILE *fp, const Set * set);
-*/
-/* Operations with sets */
-/*
-BOOLEAN setsEqual(const Set * op1, const Set * op2);
-STATUS setUnion(Set ** detination, const Set * op1, const Set * op2);
-STATUS setIntersection(Set ** detination, const Set * op1, const Set * op2);
-*/
-/** Auxiliary functions **/
-/*
+
+BOOLEAN equalsSet(const Set * op1, const Set * op2);
+STATUS unionSet(Set ** detination, const Set * op1, const Set * op2);
+STATUS intersectionSet(Set ** detination, const Set * op1, const Set * op2);
+
 STATUS newSetElement(SetElement ** setElement,const  void * info, size_t infoSize, void (*f_print)(FILE *, const void *));
 void freeSetElement(SetElement ** setElement);
-int compareInfoElement(const SetElement * setElement, const void * info, size_t infoSize);
-BOOLEAN elementsEqual(const SetElement * setElement1, const SetElement * setElement2);
+int compareInfoSetElement(const SetElement * setElement, const void * info, size_t infoSize);
+BOOLEAN equalsSetElement(const SetElement * setElement1, const SetElement * setElement2);
 void printSetElement(FILE *fp, const SetElement * setElement);
 */
 

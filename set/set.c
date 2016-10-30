@@ -46,7 +46,6 @@ void freeSet(Set ** set)
 
 	/* Code otimization */
 	/* Needs a little bit of extra memory, but is faster */
-	/* TODO check how faster is it! */
 	elements=(*set)->elements;
 	size=(*set)->size;
 
@@ -64,6 +63,7 @@ void freeSet(Set ** set)
 	
 	return;
 }
+
 BOOLEAN isInSet(const Set * set, const void * info, size_t infoSize)
 {
 	int i=0;
@@ -81,7 +81,7 @@ BOOLEAN isInSet(const Set * set, const void * info, size_t infoSize)
 
 	/* Iterate over the array checking if the info is in any element */
 	for (i=0 ; i<size ; i++) {
-		if (compareInfoSetElement(elements[i],info,infoSize) == TRUE) {
+		if (compareInfoSetElement(elements[i],info,infoSize) == 0) {
 			return TRUE;
 		}
 	}
@@ -111,7 +111,7 @@ STATUS addSet(Set * set, const void * info, size_t infoSize, void (*f_print)(FIL
 
 	/* Iterate over the array checking if the info is in any element */
 	for (i=0 ; i<size ; i++) {
-		if (compareInfoSetElement(elements[i],info,infoSize) == TRUE) {
+		if (compareInfoSetElement(elements[i],info,infoSize) == 0) {
 			return OTHER;
 		}
 	}
@@ -130,6 +130,35 @@ STATUS addSet(Set * set, const void * info, size_t infoSize, void (*f_print)(FIL
 	
 	return OK;
 
+}
+
+/* Same as add, but does not check if the element is already in the set */
+STATUS insertSet(Set * set, const void * info, size_t infoSize, void (*f_print)(FILE *, const void *))
+{
+	int size =0;
+	SetElement ** elements =NULL;
+
+	if ( set ==NULL ) {
+		return ERR;
+	}
+
+	/* Code otimization */
+	/* Needs a little bit of extra memory, but is faster */
+	elements=set->elements;
+	size=set->size;
+
+	/* Resize the vector */
+	set->elements=(SetElement **)realloc(elements,(size+1)*sizeof(SetElement*));
+	if ( set->elements == NULL ) {
+		return ERR;
+	}
+
+	/* Create the new element */
+	newSetElement(&(set->elements[size]),info,infoSize,f_print);
+	/* Update the set size */
+	set->size=size+1;
+	
+	return OK;
 }
 
 STATUS removeSet(Set * set, const void * info, size_t infoSize)
@@ -167,12 +196,14 @@ STATUS removeSet(Set * set, const void * info, size_t infoSize)
 	return OTHER;
 }
 
-STATUS getElementsSet(void ** infos, size_t ** infoSizes, const Set * set)
+STATUS getSetElements(void *** infos, size_t ** infoSizes, const Set * set)
 {
 	int i=0;
 	int size =0;
 	int infosSize =0;
+	int offset =0;
 	SetElement ** elements =NULL;
+	void ** infoOffset =NULL;
 
 	/* I enjoy so much implementing this function and messing with memory */
 
@@ -190,15 +221,21 @@ STATUS getElementsSet(void ** infos, size_t ** infoSizes, const Set * set)
 	/* Iterate over the array obtaining the info and the size of each element */
 	for (i=0 ; i<size ; i++) {
 		/* Recalculate the size of the info array and alocate new size*/
-		infosSize+=elements[i]->infoSize;
-		(*infos)=realloc((*infos),infosSize);
-		if ( (*infos) ==NULL ) {
-			free(infoSizes);
+		offset=elements[i]->infoSize;
+		infosSize+=offset;
+		
+		printf("%d,%d\t",offset,infosSize);	
+		(*infos)=(void**)realloc((*infos),infosSize);
+		if ( (*infos) == NULL ) {
+			free((*infoSizes));
 			return ERR;
 		}
 
 		/* Copy the information */
-		memcpy(infos+infosSize-elements[i]->infoSize,elements[i],elements[i]->infoSize);
+		infoOffset = (*infos)+infosSize-offset;
+		infoOffset =malloc(elements[i]->infoSize);
+		memcpy( infoOffset, elements[i]->info, elements[i]->infoSize);
+		printf("(%d)\n",*(int*)(infoOffset));
 	}
 
 	return OK;
@@ -222,14 +259,14 @@ STATUS copySet(Set ** dst,const Set * src)
 	elements=src->elements;
 	size=src->size;
 
-	/* Iterate over the first array adding each element*/
+	/* Alloc space for the vector */
+	(*dst)->elements=(SetElement **)malloc(size*sizeof(SetElement*));
+
+	/* Iterate over the first array inserting each element*/
 	for ( ; i<size ; i++) {
-		/* Resize the vector */
-		(*dst)->elements=(SetElement **)realloc((*dst)->elements,(size+1)*sizeof(SetElement*));
 		if ( (*dst)->elements == NULL ) {
 			return ERR;
 		}
-
 		/* Create the new element */
 		newSetElement(&((*dst)->elements[i]),elements[i]->info,elements[i]->infoSize,elements[i]->f_print);
 	}
@@ -296,7 +333,6 @@ BOOLEAN equalsSet(const Set * op1, const Set * op2)
 	return TRUE;
 }
 
-/* TODO while intersection dont use add, because it checks if is already in the set */
 STATUS unionSet(Set ** destination, const Set * op1, const Set * op2)
 {
 	int i=0;
@@ -315,9 +351,10 @@ STATUS unionSet(Set ** destination, const Set * op1, const Set * op2)
 	elements=op1->elements;
 	size=op1->size;
 
-	/* Iterate over the first array adding each element*/
+	/* Iterate over the first array inserting each element*/
 	for (i=0 ; i<size ; i++) {
-		addSet((*destination), elements[i]->info, elements[i]->infoSize, elements[i]->f_print);
+		/* Insert the new element */
+		insertSet((*destination), elements[i]->info, elements[i]->infoSize, elements[i]->f_print);
 	}
 
 	elements=op2->elements;
@@ -331,32 +368,30 @@ STATUS unionSet(Set ** destination, const Set * op1, const Set * op2)
 	return OK;
 }
 
-STATUS intersectionSet(Set ** detination, const Set * op1, const Set * op2)
+/* intersection uses insert, because the destination set is empty */
+STATUS intersectionSet(Set ** destination, const Set * op1, const Set * op2)
 {
-	int i=0,j=0;
-	int size1 =0, size2 =0;
-	SetElement ** elements1 =NULL, ** elements2 =NULL;
+	int i=0;
+	int size =0;
+	SetElement ** elements =NULL;
 
-	if ( detination == NULL || op1 == NULL || op2 == NULL ) {
+	if ( destination == NULL || op1 == NULL || op2 == NULL ) {
 		return ERR;
 	}
 
 	/* Create, and allocate the destination array */
-	newSet(detination);
+	newSet(destination);
 
 	/* Code otimization */
 	/* Needs a little bit of extra memory, but is faster */
-	elements1=op1->elements;
-	size1=op1->size;
-	elements2=op2->elements;
-	size2=op2->size;
+	size=op1->size;
+	elements=op1->elements;
 
 	/* Iterate over the first array adding each element if is in the second */
-	for (i=0 ; i<size1 ; i++) {
-		for (j=0; j<size2 ; j++) {
-			if (equalsSetElement(elements1[i], elements2[j]) == TRUE) {
-				addSet((*detination), elements1[i]->info, elements1[i]->infoSize,elements1[i]->f_print);
-			}
+	for (i=0 ; i<size ; i++) {
+		if (isInSet(op2,elements[i]->info,elements[i]->infoSize) == TRUE) {
+			/* Insert the new element */
+			insertSet((*destination), elements[i]->info, elements[i]->infoSize, elements[i]->f_print);
 		}
 	}
 	
