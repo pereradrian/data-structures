@@ -14,6 +14,7 @@ typedef struct Struct {
 void printArray( GenericArray * array );
 int main() {
 
+	int i=0;
 	GenericArray * array1 = NULL; 
 	GenericArray * array2 = NULL; 
 	int integer1 = 1;
@@ -31,11 +32,7 @@ int main() {
 	char * string3 = "string3";
 	char * string4 = "string4";
 
-	Struct struct1;
-	Struct struct2;
-	Struct struct22;
-	Struct struct3;
-	Struct struct4;
+	Struct structure[5];
 
 	
 
@@ -150,36 +147,33 @@ int main() {
 	/* Structures */
 	printf("\n\n\n\nTest structures:\n\n\n\n");
 
-	struct2.att1=1;
-	struct2.att2=2;
-	struct2.att3=3;
-	struct2.att4=4;
-	struct2.att5=5;
-	struct2.att6=6;
-	struct2.att7=7;
+	for (i=0; i<4; i++) {
+		memset(&structure[i], i, sizeof(Struct));	
+	}
+	memset(&structure[i], i-1, sizeof(Struct));
 
 	newGenericArray(&array1);
 	printArray(array1);
-	addGenericArray(array1, &struct1, sizeof(Struct));
-	addGenericArray(array1, &struct1, sizeof(Struct));
-	addGenericArray(array1, &struct1, sizeof(Struct));
-	addGenericArray(array1, &struct2, sizeof(Struct));	
-	addGenericArray(array1, &struct1, sizeof(Struct));
-	addGenericArray(array1, &struct1, sizeof(Struct));
-	addGenericArray(array1, &struct1, sizeof(Struct));
+	addGenericArray(array1, &structure[0], sizeof(Struct));
+	addGenericArray(array1, &structure[0], sizeof(Struct));
+	addGenericArray(array1, &structure[0], sizeof(Struct));
+	addGenericArray(array1, &structure[0], sizeof(Struct));	
+	addGenericArray(array1, &structure[3], sizeof(Struct));
+	addGenericArray(array1, &structure[0], sizeof(Struct));
+	addGenericArray(array1, &structure[0], sizeof(Struct));
 	printArray(array1);
-	removeGenericArray(array1, &struct2, sizeof(Struct));
+	removeGenericArray(array1, &structure[3], sizeof(Struct));
 	printArray(array1);
-	addGenericArray(array1, &struct2, sizeof(Struct));
-	removeGenericArray(array1, &struct22, sizeof(Struct));
+	addGenericArray(array1, &structure[3], sizeof(Struct));
+	removeGenericArray(array1, &structure[4], sizeof(Struct));
 	printArray(array1);	
 	freeGenericArray(&array1);
 
 	newGenericArray(&array1);
-	addGenericArray(array1, &struct1, sizeof(Struct));
-	addGenericArray(array1, &struct2, sizeof(Struct));
-	addGenericArray(array1, &struct3, sizeof(Struct));
-	addGenericArray(array1, &struct4, sizeof(Struct));
+	addGenericArray(array1, &structure[0], sizeof(Struct));
+	addGenericArray(array1, &structure[1], sizeof(Struct));
+	addGenericArray(array1, &structure[2], sizeof(Struct));
+	addGenericArray(array1, &structure[3], sizeof(Struct));
 
  	getGenericArray((void ***)&values3[0] ,array1, 0);
  	getGenericArray((void ***)&values3[1] ,array1, 1);
@@ -187,8 +181,10 @@ int main() {
  	getGenericArray((void ***)&values3[3] ,array1, 3);
 
 
-	printf("%p,%p,%p,%p,%p,%p,%p",values3[2]->att1,values3[2]->att2,
-values3[2]->att3,values3[2]->att4,values3[2]->att5,values3[2]->att6,values3[2]->att7);
+	printf("[%p,%p,%p,%p,%c,%d,%p]\n", (void*)values3[0]->att1, (void*)values3[0]->att2, (void*)values3[0]->att3, (void*)values3[0]->att4, values3[0]->att5, values3[0]->att6, (void*)values3[0]->att7);
+	printf("[%p,%p,%p,%p,%c,%d,%p]\n", (void*)values3[1]->att1, (void*)values3[1]->att2, (void*)values3[1]->att3, (void*)values3[1]->att4, values3[1]->att5, values3[1]->att6, (void*)values3[1]->att7);
+	printf("[%p,%p,%p,%p,%c,%d,%p]\n", (void*)values3[2]->att1, (void*)values3[2]->att2, (void*)values3[2]->att3, (void*)values3[2]->att4, values3[2]->att5, values3[2]->att6, (void*)values3[2]->att7);
+	printf("[%p,%p,%p,%p,%c,%d,%p]\n", (void*)values3[3]->att1, (void*)values3[3]->att2, (void*)values3[3]->att3, (void*)values3[3]->att4, values3[3]->att5, values3[3]->att6, (void*)values3[3]->att7);
 
  	free(values3[0]);
  	free(values3[1]);
@@ -197,13 +193,13 @@ values3[2]->att3,values3[2]->att4,values3[2]->att5,values3[2]->att6,values3[2]->
 	freeGenericArray(&array1);
 
 	newGenericArray(&array1);
-	addGenericArray(array1, &struct1, sizeof(Struct));
-	addGenericArray(array1, &struct1, sizeof(Struct));
-	addGenericArray(array1, &struct1, sizeof(Struct));
-	addGenericArray(array1, &struct1, sizeof(Struct));
-	addGenericArray(array1, &struct1, sizeof(Struct));
-	addGenericArray(array1, &struct1, sizeof(Struct));
-	addGenericArray(array1, &struct1, sizeof(Struct));
+	addGenericArray(array1, &structure[0], sizeof(Struct));
+	addGenericArray(array1, &structure[0], sizeof(Struct));
+	addGenericArray(array1, &structure[0], sizeof(Struct));
+	addGenericArray(array1, &structure[0], sizeof(Struct));
+	addGenericArray(array1, &structure[0], sizeof(Struct));
+	addGenericArray(array1, &structure[0], sizeof(Struct));
+	addGenericArray(array1, &structure[0], sizeof(Struct));
 	copyGenericArray(&array2,array1);
 
 	printArray(array1);
@@ -212,7 +208,128 @@ values3[2]->att3,values3[2]->att4,values3[2]->att5,values3[2]->att6,values3[2]->
 	freeGenericArray(&array1);
 	freeGenericArray(&array2);
 	
+
+
 	/* All together */
+	printf("\n\n\n\nTest general:\n\n\n\n");
+	newGenericArray(&array1);
+	printArray(array1);
+	addGenericArray(array1, &integer2, sizeof(int));
+	addGenericArray(array1, &integer2, sizeof(int));
+	addGenericArray(array1, &integer1, sizeof(int));
+	addGenericArray(array1, &integer2, sizeof(int));
+	addGenericArray(array1, &integer2, sizeof(int));
+	addGenericArray(array1, &integer2, sizeof(int));
+	addGenericArray(array1, &integer2, sizeof(int));
+	addGenericArray(array1, &string1, strlen(string1)+1);
+	addGenericArray(array1, &string1, strlen(string1)+1);
+	addGenericArray(array1, &string1, strlen(string1)+1);
+	addGenericArray(array1, &string2, strlen(string2)+1);
+	addGenericArray(array1, &string1, strlen(string1)+1);
+	addGenericArray(array1, &string1, strlen(string1)+1);
+	addGenericArray(array1, &string1, strlen(string1)+1);
+	addGenericArray(array1, &structure[0], sizeof(Struct));
+	addGenericArray(array1, &structure[0], sizeof(Struct));
+	addGenericArray(array1, &structure[0], sizeof(Struct));
+	addGenericArray(array1, &structure[0], sizeof(Struct));	
+	addGenericArray(array1, &structure[3], sizeof(Struct));
+	addGenericArray(array1, &structure[0], sizeof(Struct));
+	addGenericArray(array1, &structure[0], sizeof(Struct));
+	printArray(array1);
+	removeGenericArray(array1, &integer1, sizeof(int));
+	removeGenericArray(array1, &string2, strlen(string2)+1);
+	printArray(array1);
+	removeGenericArray(array1, &integer22, sizeof(int));
+	printArray(array1);	
+	addGenericArray(array1, &string2, strlen(string2)+1);
+	removeGenericArray(array1, &string22, strlen(string22)+1);
+	printArray(array1);
+	freeGenericArray(&array1);
+
+	newGenericArray(&array1);
+	addGenericArray(array1, &integer1, sizeof(int));
+	addGenericArray(array1, &integer2, sizeof(int));
+	addGenericArray(array1, &integer3, sizeof(int));
+	addGenericArray(array1, &integer4, sizeof(int));
+	addGenericArray(array1, &string1, strlen(string1)+1);
+	addGenericArray(array1, &string2, strlen(string2)+1);
+	addGenericArray(array1, &string3, strlen(string3)+1);
+	addGenericArray(array1, &string4, strlen(string4)+1);
+	addGenericArray(array1, &structure[0], sizeof(Struct));
+	addGenericArray(array1, &structure[1], sizeof(Struct));
+	addGenericArray(array1, &structure[2], sizeof(Struct));
+	addGenericArray(array1, &structure[3], sizeof(Struct));
+
+ 	getGenericArray((void ***)&values[0] ,array1, 0);
+ 	getGenericArray((void ***)&values[1] ,array1, 1);
+ 	getGenericArray((void ***)&values[2] ,array1, 2);
+ 	getGenericArray((void ***)&values[3] ,array1, 3);
+
+ 	getGenericArray((void ***)&values2[0] ,array1, 4);
+ 	getGenericArray((void ***)&values2[1] ,array1, 5);
+ 	getGenericArray((void ***)&values2[2] ,array1, 6);
+ 	getGenericArray((void ***)&values2[3] ,array1, 7);
+
+ 	getGenericArray((void ***)&values3[0] ,array1, 8);
+ 	getGenericArray((void ***)&values3[1] ,array1, 9);
+ 	getGenericArray((void ***)&values3[2] ,array1, 10);
+ 	getGenericArray((void ***)&values3[3] ,array1, 11);
+
+	printf("%d,%d,%d,%d\n",*values[0],*values[1],*values[2],*values[3]);
+	printf("%s,%s,%s,%s\n",*values2[0],*values2[1],*values2[2],*values2[3]);
+
+	printf("[%p,%p,%p,%p,%c,%d,%p]\n", (void*)values3[0]->att1, (void*)values3[0]->att2, (void*)values3[0]->att3, (void*)values3[0]->att4, values3[0]->att5, values3[0]->att6, (void*)values3[0]->att7);
+	printf("[%p,%p,%p,%p,%c,%d,%p]\n", (void*)values3[1]->att1, (void*)values3[1]->att2, (void*)values3[1]->att3, (void*)values3[1]->att4, values3[1]->att5, values3[1]->att6, (void*)values3[1]->att7);
+	printf("[%p,%p,%p,%p,%c,%d,%p]\n", (void*)values3[2]->att1, (void*)values3[2]->att2, (void*)values3[2]->att3, (void*)values3[2]->att4, values3[2]->att5, values3[2]->att6, (void*)values3[2]->att7);
+	printf("[%p,%p,%p,%p,%c,%d,%p]\n", (void*)values3[3]->att1, (void*)values3[3]->att2, (void*)values3[3]->att3, (void*)values3[3]->att4, values3[3]->att5, values3[3]->att6, (void*)values3[3]->att7);
+
+ 	free(values[0]);
+ 	free(values[1]);
+ 	free(values[2]);
+ 	free(values[3]);
+
+ 	free(values2[0]);
+ 	free(values2[1]);
+ 	free(values2[2]);
+ 	free(values2[3]);
+
+ 	free(values3[0]);
+ 	free(values3[1]);
+ 	free(values3[2]);
+ 	free(values3[3]);
+
+	freeGenericArray(&array1);
+
+	newGenericArray(&array1);
+	addGenericArray(array1, &integer1, sizeof(int));
+	addGenericArray(array1, &integer2, sizeof(int));
+	addGenericArray(array1, &integer3, sizeof(int));
+	addGenericArray(array1, &integer4, sizeof(int));
+	addGenericArray(array1, &integer4, sizeof(int));
+	addGenericArray(array1, &integer4, sizeof(int));
+	addGenericArray(array1, &integer4, sizeof(int));
+	addGenericArray(array1, &string1, strlen(string1)+1);
+	addGenericArray(array1, &string1, strlen(string1)+1);
+	addGenericArray(array1, &string1, strlen(string1)+1);
+	addGenericArray(array1, &string1, strlen(string1)+1);
+	addGenericArray(array1, &string1, strlen(string1)+1);
+	addGenericArray(array1, &string1, strlen(string1)+1);
+	addGenericArray(array1, &string1, strlen(string1)+1);
+	addGenericArray(array1, &structure[0], sizeof(Struct));
+	addGenericArray(array1, &structure[0], sizeof(Struct));
+	addGenericArray(array1, &structure[0], sizeof(Struct));
+	addGenericArray(array1, &structure[0], sizeof(Struct));
+	addGenericArray(array1, &structure[0], sizeof(Struct));
+	addGenericArray(array1, &structure[0], sizeof(Struct));
+	addGenericArray(array1, &structure[0], sizeof(Struct));
+	copyGenericArray(&array2,array1);
+
+	printArray(array1);
+	printArray(array2);
+
+	freeGenericArray(&array1);
+	freeGenericArray(&array2);
+
 	return 0;
 }
 /*
