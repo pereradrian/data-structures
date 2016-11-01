@@ -42,6 +42,7 @@ STATUS addGenericArray(GenericArray * genericArray, const void * info, size_t si
 
 	/* Copy the new element */
 	memcpy(genericArray->infos+genericArray->sizeInBytes, info, size);
+	genericArray->sizes[genericArray->sizeInElements]=size;
 	genericArray->sizeInBytes+=size;
 	genericArray->sizeInElements++;
 
@@ -66,12 +67,12 @@ STATUS removeGenericArray(GenericArray * genericArray, const void * info, size_t
 	sizes = genericArray->sizes;
 
 	/* Look for the element in the hole array */
-	for ( ; offset<genericArray->sizeInBytes ; index++, offset += sizes[index] ) {
+	for ( ; offset<genericArray->sizeInBytes && index < genericArray->sizeInElements ; index++ ) {
 		/* If the element is found shift the vector and realloc with smaller size*/
 		if (sizes[index] == size) {
 			if ( memcmp(infos+offset, info, size) == 0 && sizes[index] == size ) {
 				/* Copy the entire array left but the element to remove */
-				memcpy(infos+offset, infos+offset+size, genericArray->sizeInBytes - size);
+				memmove(infos+offset, infos+offset+size, genericArray->sizeInBytes - size - offset);
 				genericArray->infos = realloc(infos, genericArray->sizeInBytes - size );
 
 				/* Update the array information */
@@ -81,6 +82,7 @@ STATUS removeGenericArray(GenericArray * genericArray, const void * info, size_t
 				return OK;	
 			}
 		}
+		offset += sizes[index];
 	}
 	
 	return OTHER;
@@ -151,6 +153,8 @@ STATUS copyGenericArray(GenericArray ** destination, const GenericArray * origin
 	/* Copy hole arrays */
 	memcpy((*destination)->infos,origin->infos, origin->sizeInBytes);
 	memcpy((*destination)->sizes,origin->sizes, origin->sizeInElements*(sizeof(size_t)));
+	(*destination)->sizeInBytes=origin->sizeInBytes;
+	(*destination)->sizeInElements=origin->sizeInElements;
 
 	return OK;
 }
