@@ -196,46 +196,21 @@ STATUS removeSet(Set * set, const void * info, size_t infoSize)
 	return OTHER;
 }
 
-STATUS getSetElements(void *** infos, size_t ** infoSizes, const Set * set)
+STATUS getSetElements(GenericArray ** genericArray, const Set * set)
 {
 	int i=0;
 	int size =0;
-	int infosSize =0;
-	int offset =0;
 	SetElement ** elements =NULL;
-	void ** infoOffset =NULL;
 
-	/* I enjoy so much implementing this function and messing with memory */
 
-	/* Code otimization */
-	/* Needs a little bit of extra memory, but is faster */
+	/* code optimization */
 	elements=set->elements;
 	size=set->size;
 
-	/* First thing is to create the array of sizes */
-	(*infoSizes)=(size_t*)malloc(sizeof(size_t)*size);
-	if ( (*infoSizes)==NULL ) {
-		return ERR;
-	}	
 
-	/* Iterate over the array obtaining the info and the size of each element */
+	newGenericArray(genericArray);
 	for (i=0 ; i<size ; i++) {
-		/* Recalculate the size of the info array and alocate new size*/
-		offset=elements[i]->infoSize;
-		infosSize+=offset;
-		
-		printf("%d,%d\t",offset,infosSize);	
-		(*infos)=(void**)realloc((*infos),infosSize);
-		if ( (*infos) == NULL ) {
-			free((*infoSizes));
-			return ERR;
-		}
-
-		/* Copy the information */
-		infoOffset = (*infos)+infosSize-offset;
-		infoOffset =malloc(elements[i]->infoSize);
-		memcpy( infoOffset, elements[i]->info, elements[i]->infoSize);
-		printf("(%d)\n",*(int*)(infoOffset));
+		addGenericArray((*genericArray), elements[i]->info, elements[i]->infoSize);
 	}
 
 	return OK;

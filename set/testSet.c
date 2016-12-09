@@ -1,8 +1,10 @@
 #include "set.h"
 
 void printInt(FILE *fp, const void* integer);
+void printArray( GenericArray * array );
 
-int main() {
+int main()
+{
 
 	Set * set =NULL;
 	Set * set2 =NULL;
@@ -16,8 +18,7 @@ int main() {
 	int value7 =7;
 	int value8 =8;
 	int value9 =9;
-	int * arrayIntegers =NULL;
-	size_t * arraySizes =NULL;
+	GenericArray * array =NULL;
 
 	/*Empty set tests  */
 	printf("Empty set tests:\n");
@@ -185,12 +186,32 @@ int main() {
 	printSet(stdout,set);
 	
 	/* Obtain the infos */
-	getSetElements((void***)&arrayIntegers, &arraySizes, set);
+	getSetElements(&array, set);
+	printArray(array);
+	freeGenericArray(&array);
 
 	freeSet(&set);	
 	
-	
 
+	/* Checking equals */
+	newSet(&set);
+	addSet(set,(void *)&value1,sizeof(int),&printInt);
+	addSet(set,(void *)&value2,sizeof(int),&printInt);
+	addSet(set,(void *)&value3,sizeof(int),&printInt);
+	addSet(set,(void *)&value4,sizeof(int),&printInt);
+	addSet(set,(void *)&value5,sizeof(int),&printInt);
+	addSet(set,(void *)&value6,sizeof(int),&printInt);
+	addSet(set,(void *)&value7,sizeof(int),&printInt);
+	addSet(set,(void *)&value8,sizeof(int),&printInt);
+	copySet(&set2,set);
+	printSet(stdout,set);
+	printSet(stdout,set2);
+	printf("Equals:\n");
+	printf("\t%d\n",equalsSet(set, set2));
+	/* Obtain the infos */
+
+	freeSet(&set);	
+	freeSet(&set2);	
 
 	printf("The End\n");
 	fflush(stdout);
@@ -204,7 +225,27 @@ void printInt(FILE *fp,const void* integer)
 	fprintf(fp,"(%d)",*(int*)integer);
 	fflush(fp);
 }
+void printArray( GenericArray * array )
+{
+	int i=0, offset = 0;
 
+	if (!array) {
+		return;
+	}
+
+	printf("*************\n");
+	printf("Elements:\t%d\n",array->sizeInElements);
+	printf("Size:\t%d\n",array->sizeInBytes);
+	printf("Set:\n");
+	for (i=0; i<array->sizeInElements;i++) {
+		printf("[%p,%ld]\n",array->infos+offset,array->sizes[i]);
+		offset+=array->sizes[i];
+	}
+	printf("\n*************\n");
+	fflush(stdout);
+
+	return;	
+}
 /*
 STATUS newSet(Set ** set);
 void freeSet(Set ** set);

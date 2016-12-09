@@ -1,6 +1,6 @@
 CFLAGS= -Wall -g -Wpedantic -Wextra
 
-all: clean testSet
+all: clean testGenericArray
 
 %.o: %.c
 	@echo -n Creating object $@ ...
@@ -14,7 +14,7 @@ clean:
 	@rm ./testSet > /dev/null 2>&1 || true
 	@echo "\t[OK]"
 
-testSet: testSet.o set.o genericArray.o
+testGenericArray: testGenericArray.o genericArray.o
 	@echo -n Creating executable $@ ...
 	@gcc -o $@ $^
 	@echo "\t[OK]"

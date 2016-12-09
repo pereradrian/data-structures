@@ -6,6 +6,7 @@
 #include <string.h>
 
 #include "../types.h"
+#include "genericArray.h"
 
 typedef struct SetElement {
 	void * info;
@@ -25,7 +26,7 @@ size_t getSizeSet(const Set * set);
 STATUS addSet(Set * set, const void * info, size_t infoSize, void (*f_print)(FILE *, const void *));
 STATUS insertSet(Set * set, const void * info, size_t infoSize, void (*f_print)(FILE *, const void *));
 STATUS removeSet(Set * set, const void * info, size_t infoSize);
-STATUS getSetElements(void *** infos, size_t ** infoSizes, const Set * set);
+STATUS getSetElements(GenericArray ** genericArray, const Set * set);
 STATUS copySet(Set ** dst,const Set * src);
 void printSet(FILE *fp, const Set * set);
 
