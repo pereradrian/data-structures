@@ -74,7 +74,7 @@ String subString( const String string, int begin, int end )
 
 String reverseString( const String string )
 {
-	String buffer = NULL;
+	char buffer = NULL;
 	int size = 0;
 	int i=0;
 
@@ -83,24 +83,53 @@ String reverseString( const String string )
 	}
 
 	size = lengthString(string);
-	buffer = newString(size);
 
 	while ( i<size ) {
-		result[i] = string[size-i];
+		buffer = string[i];
+		string[i] = string[size - i -1];
+		string[size - i] = buffer;
 	}
-	
-	i = 0;
-	while ( i< size ) {
-		string[i] = buffer[i];
-	}
-
-	freeString(buffer);
 
 	return string;
 }
 
-String copyReverseString( const String string );
-String reject( const String string, char key );
+String copyReverseString( const String string )
+{
+	String result = NULL;
+	int size = 0;
+	int i=0;
+
+	if ( string == NULL) {
+		return NULL;
+	}
+
+	size = lengthString(string);
+	result = newString(size);
+
+	while ( i<size ) {
+		result[i] = string[size - i -1];
+	}
+
+	return string;
+}
+
+String reject( const String string, char key )
+{
+	int i=0;
+	int size = 0;
+	
+	if ( string == NULL ) {
+		return NULL;	
+	}
+
+	size = lengthString(string);
+
+	while ( i < size) {
+		if ( string[i] == key ) {
+			string[i] = 1;
+		}
+	}
+}
 String copyReject( const String string, char key );
 String rejectAll( const String string, const String key );
 String copyRejectAll( const String string, char key );
