@@ -113,6 +113,7 @@ String copyReverseString( const String string )
 	return string;
 }
 
+/* Substitutes each char that is equal to key with 1's (?) */
 String reject( const String string, char key )
 {
 	int i=0;
@@ -129,13 +130,73 @@ String reject( const String string, char key )
 			string[i] = 1;
 		}
 	}
+	
+	return string;
 }
-String copyReject( const String string, char key );
-String rejectAll( const String string, const String key );
-String copyRejectAll( const String string, char key );
 
-int lengthString( const String string );
-int findString( const String string , char key );
-int findReverseString( const String string , char key );
+String copyReject( const String string, char key )
+{
+	reject( copyString(string), key);
+}
+
+String rejectAll( const String string, const String key )
+{
+	int n = 0;
+	int i=0;
+
+	n = lentghString(key);
+	while ( i<n ) {
+		reject(string, key[i]);
+		i++;
+	}
+
+	return string;
+}
+
+String copyRejectAll( const String string, char key )
+{
+	rejectAll( copyString(string), key);
+}
+
+int lengthString( const String string )
+{
+	int i = 0;
+	
+	while ( string[i] != 0) {
+		i++;
+	}
+	
+	return i;
+}
+int findString( const String string , char key )
+{
+	int i = 0;
+	
+	while ( string[i] != key) {
+		if (string[i] == 0) {
+			return -1;
+		}
+		i++;
+	}
+	
+	return i;
+}
+
+int findReverseString( const String string , char key )
+{
+	int i = 0;
+
+	i=lentghString(string);
+	
+	while ( string[i] != key ) {
+		if ( i<0 ) {
+			return -1;
+		}
+		i--;
+	}
+	
+	return i;	
+}
+
 int findAllString( const String string , const String key );
 int compare( const String string1 , const String string2 );
